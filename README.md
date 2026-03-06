@@ -60,74 +60,38 @@ Whisper is a calm, calendar-free mobile journaling app built with Flutter. It is
 
 
 
-\## screenshots
-
-
+## screenshots
 
 <table>
-
-&nbsp; <tr>
-
-&nbsp;   <td><img src="screenshots/01.jpeg" width="160"/></td>
-
-&nbsp;   <td><img src="screenshots/02.jpeg" width="160"/></td>
-
-&nbsp;   <td><img src="screenshots/03.jpeg" width="160"/></td>
-
-&nbsp;   <td><img src="screenshots/04.jpeg" width="160"/></td>
-
-&nbsp; </tr>
-
-&nbsp; <tr>
-
-&nbsp;   <td><img src="screenshots/05.jpeg" width="160"/></td>
-
-&nbsp;   <td><img src="screenshots/06.jpeg" width="160"/></td>
-
-&nbsp;   <td><img src="screenshots/07.jpeg" width="160"/></td>
-
-&nbsp;   <td><img src="screenshots/08.jpeg" width="160"/></td>
-
-&nbsp; </tr>
-
-&nbsp; <tr>
-
-&nbsp;   <td><img src="screenshots/09.jpeg" width="160"/></td>
-
-&nbsp;   <td><img src="screenshots/10.jpeg" width="160"/></td>
-
-&nbsp;   <td><img src="screenshots/11.jpeg" width="160"/></td>
-
-&nbsp;   <td><img src="screenshots/12.jpeg" width="160"/></td>
-
-&nbsp; </tr>
-
-&nbsp; <tr>
-
-&nbsp;   <td><img src="screenshots/13.jpeg" width="160"/></td>
-
-&nbsp;   <td><img src="screenshots/14.jpeg" width="160"/></td>
-
-&nbsp;   <td><img src="screenshots/15.jpeg" width="160"/></td>
-
-&nbsp;   <td><img src="screenshots/16.jpeg" width="160"/></td>
-
-&nbsp; </tr>
-
-&nbsp; <tr>
-
-&nbsp;   <td><img src="screenshots/17.jpeg" width="160"/></td>
-
-&nbsp;   <td><img src="screenshots/18.jpeg" width="160"/></td>
-
-&nbsp; </tr>
-
+  <tr>
+    <td><img src="screenshots/1.jpeg" width="160"/></td>
+    <td><img src="screenshots/2.jpeg" width="160"/></td>
+    <td><img src="screenshots/3.jpeg" width="160"/></td>
+    <td><img src="screenshots/4.jpeg" width="160"/></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/5.jpeg" width="160"/></td>
+    <td><img src="screenshots/6.jpeg" width="160"/></td>
+    <td><img src="screenshots/7.jpeg" width="160"/></td>
+    <td><img src="screenshots/8.jpeg" width="160"/></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/9.jpeg" width="160"/></td>
+    <td><img src="screenshots/10.jpeg" width="160"/></td>
+    <td><img src="screenshots/11.jpeg" width="160"/></td>
+    <td><img src="screenshots/12.jpeg" width="160"/></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/13.jpeg" width="160"/></td>
+    <td><img src="screenshots/14.jpeg" width="160"/></td>
+    <td><img src="screenshots/15.jpeg" width="160"/></td>
+    <td><img src="screenshots/16.jpeg" width="160"/></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/17.jpeg" width="160"/></td>
+    <td><img src="screenshots/18.jpeg" width="160"/></td>
+  </tr>
 </table>
-
-
-
----
-
 
 
 \## built with
