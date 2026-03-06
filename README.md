@@ -1,16 +1,204 @@
-# whisper
+\# whisper.
 
-A new Flutter project.
 
-## Getting Started
 
-This project is a starting point for a Flutter application.
+> \*your private canvas for the noise inside\*
 
-A few resources to get you started if this is your first Flutter project:
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Whisper is a calm, calendar-free mobile journaling app built with Flutter. It is not a productivity tool. It does not push you to write every day. It simply listens — when you need to express something, it's there.
+
+
+
+---
+
+
+
+\## philosophy
+
+
+
+\- \*\*pages, not days\*\* — no calendar pressure, no empty days to feel guilty about
+
+\- \*\*offline-first\*\* — your thoughts belong to you
+
+\- \*\*emotion over productivity\*\* — write, draw, record, listen — whatever captures the moment
+
+\- \*\*silence is allowed\*\* — empty pages are welcome, nothing is mandatory
+
+
+
+---
+
+
+
+\## features
+
+
+
+\- 📓 \*\*notebooks\*\* — organize your whispers into collections
+
+\- 🎨 \*\*freeform canvas\*\* — each whisper is an open space, not a lined page
+
+\- ✍️ \*\*text\*\* — write with custom colors and font sizes
+
+\- 🖊️ \*\*drawing\*\* — pen, pencil, marker, highlighter and eraser
+
+\- 🖼️ \*\*photos\*\* — add and crop images, scale and rotate freely
+
+\- 🎙️ \*\*voice\*\* — record and embed voice notes directly on the canvas
+
+\- 🎵 \*\*music\*\* — attach Spotify, Apple Music or YouTube links as mood cards
+
+\- 🌙 \*\*canvas themes\*\* — 10 background colors to set the mood
+
+\- 📤 \*\*export \& share\*\* — save your whisper as a high-quality image
+
+
+
+---
+
+
+
+\## screenshots
+
+
+
+<table>
+
+&nbsp; <tr>
+
+&nbsp;   <td><img src="screenshots/01.jpeg" width="160"/></td>
+
+&nbsp;   <td><img src="screenshots/02.jpeg" width="160"/></td>
+
+&nbsp;   <td><img src="screenshots/03.jpeg" width="160"/></td>
+
+&nbsp;   <td><img src="screenshots/04.jpeg" width="160"/></td>
+
+&nbsp; </tr>
+
+&nbsp; <tr>
+
+&nbsp;   <td><img src="screenshots/05.jpeg" width="160"/></td>
+
+&nbsp;   <td><img src="screenshots/06.jpeg" width="160"/></td>
+
+&nbsp;   <td><img src="screenshots/07.jpeg" width="160"/></td>
+
+&nbsp;   <td><img src="screenshots/08.jpeg" width="160"/></td>
+
+&nbsp; </tr>
+
+&nbsp; <tr>
+
+&nbsp;   <td><img src="screenshots/09.jpeg" width="160"/></td>
+
+&nbsp;   <td><img src="screenshots/10.jpeg" width="160"/></td>
+
+&nbsp;   <td><img src="screenshots/11.jpeg" width="160"/></td>
+
+&nbsp;   <td><img src="screenshots/12.jpeg" width="160"/></td>
+
+&nbsp; </tr>
+
+&nbsp; <tr>
+
+&nbsp;   <td><img src="screenshots/13.jpeg" width="160"/></td>
+
+&nbsp;   <td><img src="screenshots/14.jpeg" width="160"/></td>
+
+&nbsp;   <td><img src="screenshots/15.jpeg" width="160"/></td>
+
+&nbsp;   <td><img src="screenshots/16.jpeg" width="160"/></td>
+
+&nbsp; </tr>
+
+&nbsp; <tr>
+
+&nbsp;   <td><img src="screenshots/17.jpeg" width="160"/></td>
+
+&nbsp;   <td><img src="screenshots/18.jpeg" width="160"/></td>
+
+&nbsp; </tr>
+
+</table>
+
+
+
+---
+
+
+
+\## built with
+
+
+
+\- \[Flutter](https://flutter.dev)
+
+\- \[just\_audio](https://pub.dev/packages/just\_audio)
+
+\- \[record](https://pub.dev/packages/record)
+
+\- \[image\_picker](https://pub.dev/packages/image\_picker) + \[image\_cropper](https://pub.dev/packages/image\_cropper)
+
+\- \[screenshot](https://pub.dev/packages/screenshot) + \[share\_plus](https://pub.dev/packages/share\_plus)
+
+\- \[shared\_preferences](https://pub.dev/packages/shared\_preferences)
+
+\- \[url\_launcher](https://pub.dev/packages/url\_launcher)
+
+
+
+---
+
+
+
+\## getting started
+
+```bash
+
+git clone https://github.com/husnabetulpatat/whisper.git
+
+cd whisper
+
+flutter pub get
+
+flutter run
+
+```
+
+
+
+> Requires Flutter 3.x · Android SDK 21+ · iOS 13+
+
+
+
+---
+
+
+
+\## roadmap
+
+
+
+\- \[ ] Firebase auth + cloud sync
+
+\- \[ ] Share whispers with friends
+
+\- \[ ] Video support
+
+\- \[ ] Stickers \& custom fonts
+
+
+
+---
+
+
+
+\## license
+
+
+
+MIT
+
