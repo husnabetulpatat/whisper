@@ -15,6 +15,7 @@ class MusicCardSheet extends StatefulWidget {
 
 class _MusicCardSheetState extends State<MusicCardSheet> {
   final TextEditingController _urlController = TextEditingController();
+  final TextEditingController _titleController = TextEditingController();
   String? _error;
 
   MusicPlatform _detectPlatform(String url) {
@@ -30,7 +31,7 @@ class _MusicCardSheetState extends State<MusicCardSheet> {
     return MusicPlatform.unknown;
   }
 
-  String _extractTitle(String url) {
+  String _extractFallbackTitle(String url) {
     try {
       final uri = Uri.parse(url);
       final segments = uri.pathSegments;
@@ -59,7 +60,10 @@ class _MusicCardSheetState extends State<MusicCardSheet> {
       return;
     }
 
-    final title = _extractTitle(url);
+    final title = _titleController.text.trim().isEmpty
+        ? _extractFallbackTitle(url)
+        : _titleController.text.trim();
+
     widget.onCardAdded({
       'url': url,
       'title': title,
@@ -71,6 +75,7 @@ class _MusicCardSheetState extends State<MusicCardSheet> {
   @override
   void dispose() {
     _urlController.dispose();
+    _titleController.dispose();
     super.dispose();
   }
 
@@ -117,6 +122,29 @@ class _MusicCardSheetState extends State<MusicCardSheet> {
                 ),
               ),
               onChanged: (_) => setState(() => _error = null),
+            ),
+            const SizedBox(height: 16),
+            TextField(
+              controller: _titleController,
+              style: const TextStyle(
+                fontSize: 13,
+                color: WhisperColors.ink,
+              ),
+              decoration: const InputDecoration(
+                hintText: 'song name (optional)',
+                hintStyle: TextStyle(
+                  fontSize: 13,
+                  color: WhisperColors.inkFaint,
+                ),
+                enabledBorder: UnderlineInputBorder(
+                  borderSide:
+                  BorderSide(color: WhisperColors.divider, width: 1),
+                ),
+                focusedBorder: UnderlineInputBorder(
+                  borderSide:
+                  BorderSide(color: WhisperColors.accent, width: 1),
+                ),
+              ),
             ),
             const SizedBox(height: 24),
             GestureDetector(
@@ -268,7 +296,7 @@ class MusicCardWidget extends StatelessWidget {
                 ],
               ),
             ),
-            Icon(
+            const Icon(
               Icons.open_in_new,
               size: 14,
               color: WhisperColors.inkFaint,
