@@ -81,7 +81,7 @@ class DrawingCanvasState extends State<DrawingCanvas> {
   double get currentWidth => _width;
 
   Color _effectiveColor() {
-    if (_brush == BrushType.eraser) return WhisperColors.surface;
+    if (_brush == BrushType.eraser) return Colors.transparent;
     if (_brush == BrushType.highlighter) return _color.withOpacity(0.35);
     if (_brush == BrushType.pencil) return _color.withOpacity(0.6);
     return _color;
@@ -90,7 +90,7 @@ class DrawingCanvasState extends State<DrawingCanvas> {
   double _effectiveWidth() {
     if (_brush == BrushType.marker) return _width * 3;
     if (_brush == BrushType.highlighter) return _width * 5;
-    if (_brush == BrushType.eraser) return _width * 6;
+    if (_brush == BrushType.eraser) return _width * 8;
     return _width;
   }
 
@@ -121,14 +121,17 @@ class DrawingCanvasState extends State<DrawingCanvas> {
           widget.onStrokesChanged?.call(_strokes);
         });
       },
-      child: CustomPaint(
-        painter: _StrokePainter(
-          strokes: _strokes,
-          currentPoints: _currentPoints,
-          currentColor: _effectiveColor(),
-          currentWidth: _effectiveWidth(),
+      child: RepaintBoundary(
+        child: CustomPaint(
+          painter: _StrokePainter(
+            strokes: _strokes,
+            currentPoints: _currentPoints,
+            currentColor: _effectiveColor(),
+            currentWidth: _effectiveWidth(),
+            isEraser: _brush == BrushType.eraser,
+          ),
+          size: Size.infinite,
         ),
-        size: Size.infinite,
       ),
     );
   }
@@ -139,22 +142,37 @@ class _StrokePainter extends CustomPainter {
   final List<Offset> currentPoints;
   final Color currentColor;
   final double currentWidth;
+  final bool isEraser;
 
   _StrokePainter({
     required this.strokes,
     required this.currentPoints,
     required this.currentColor,
     required this.currentWidth,
+    required this.isEraser,
   });
 
-  void _drawStroke(Canvas canvas, List<Offset> points, Color color, double width) {
+  void _drawStroke(
+      Canvas canvas,
+      List<Offset> points,
+      Color color,
+      double width,
+      bool eraser,
+      ) {
     if (points.isEmpty) return;
+
     final paint = Paint()
-      ..color = color
       ..strokeWidth = width
       ..strokeCap = StrokeCap.round
       ..strokeJoin = StrokeJoin.round
       ..style = PaintingStyle.stroke;
+
+    if (eraser) {
+      paint.blendMode = BlendMode.clear;
+      paint.color = Colors.transparent;
+    } else {
+      paint.color = color;
+    }
 
     final path = Path();
     path.moveTo(points.first.dx, points.first.dy);
@@ -163,7 +181,8 @@ class _StrokePainter extends CustomPainter {
         (points[i].dx + points[i + 1].dx) / 2,
         (points[i].dy + points[i + 1].dy) / 2,
       );
-      path.quadraticBezierTo(points[i].dx, points[i].dy, mid.dx, mid.dy);
+      path.quadraticBezierTo(
+          points[i].dx, points[i].dy, mid.dx, mid.dy);
     }
     if (points.length > 1) {
       path.lineTo(points.last.dx, points.last.dy);
@@ -173,12 +192,30 @@ class _StrokePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
+    // BlendMode.clear için saveLayer lazım
+    canvas.saveLayer(Rect.fromLTWH(0, 0, size.width, size.height), Paint());
+
     for (final stroke in strokes) {
-      _drawStroke(canvas, stroke.points, stroke.color, stroke.width);
+      _drawStroke(
+        canvas,
+        stroke.points,
+        stroke.color,
+        stroke.width,
+        stroke.brush == BrushType.eraser,
+      );
     }
+
     if (currentPoints.isNotEmpty) {
-      _drawStroke(canvas, currentPoints, currentColor, currentWidth);
+      _drawStroke(
+        canvas,
+        currentPoints,
+        currentColor,
+        currentWidth,
+        isEraser,
+      );
     }
+
+    canvas.restore();
   }
 
   @override

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import '../models/notebook.dart';
 import '../models/whisper_page.dart';
 import '../theme/whisper_colors.dart';
-import 'canvas_screen.dart';
+import 'canvas/canvas_screen.dart';
 
 class NotebookScreen extends StatefulWidget {
   final Notebook notebook;
