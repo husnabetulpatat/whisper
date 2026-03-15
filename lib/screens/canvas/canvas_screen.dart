@@ -504,10 +504,25 @@ class _CanvasScreenState extends State<CanvasScreen> {
               onExport: _exportAndShare,
             ),
             if (_drawingMode)
-              CanvasDrawingToolbar(
-                drawingKey: _drawingKey,
-                onDone: _toggleDrawingMode,
-              ),
+              if (_drawingMode)
+                StatefulBuilder(
+                  builder: (context, setToolbarState) => CanvasDrawingToolbar(
+                    drawingKey: _drawingKey,
+                    onDone: _toggleDrawingMode,
+                    onOpacityChanged: (val) {
+                      _drawingKey.currentState?.setOpacity(val);
+                      setToolbarState(() {});
+                    },
+                    onBrushChanged: (brush) {
+                      _drawingKey.currentState?.setBrush(brush);
+                      setToolbarState(() {});
+                    },
+                    onColorChanged: (color) {
+                      _drawingKey.currentState?.setColor(color);
+                      setToolbarState(() {});
+                    },
+                  ),
+                ),
             if (!_drawingMode)
               CanvasBottomToolbar(
                 onText: _addTextElement,

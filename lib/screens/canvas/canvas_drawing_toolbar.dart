@@ -5,11 +5,17 @@ import '../../widgets/drawing_canvas.dart';
 class CanvasDrawingToolbar extends StatelessWidget {
   final GlobalKey<DrawingCanvasState> drawingKey;
   final VoidCallback onDone;
+  final void Function(double) onOpacityChanged;
+  final void Function(BrushType) onBrushChanged;
+  final void Function(Color) onColorChanged;
 
   const CanvasDrawingToolbar({
     super.key,
     required this.drawingKey,
     required this.onDone,
+    required this.onOpacityChanged,
+    required this.onBrushChanged,
+    required this.onColorChanged,
   });
 
   @override
@@ -30,37 +36,70 @@ class CanvasDrawingToolbar extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // Fırça seçimi
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
                 _BrushButton(
                   label: 'pen',
                   isActive: state?.currentBrush == BrushType.pen,
-                  onTap: () => state?.setBrush(BrushType.pen),
+                  onTap: () => onBrushChanged(BrushType.pen),
                 ),
                 _BrushButton(
                   label: 'pencil',
                   isActive: state?.currentBrush == BrushType.pencil,
-                  onTap: () => state?.setBrush(BrushType.pencil),
+                  onTap: () => onBrushChanged(BrushType.pencil),
                 ),
                 _BrushButton(
                   label: 'marker',
                   isActive: state?.currentBrush == BrushType.marker,
-                  onTap: () => state?.setBrush(BrushType.marker),
+                  onTap: () => onBrushChanged(BrushType.marker),
                 ),
                 _BrushButton(
                   label: 'highlight',
                   isActive: state?.currentBrush == BrushType.highlighter,
-                  onTap: () => state?.setBrush(BrushType.highlighter),
+                  onTap: () => onBrushChanged(BrushType.highlighter),
                 ),
                 _BrushButton(
                   label: 'eraser',
                   isActive: state?.currentBrush == BrushType.eraser,
-                  onTap: () => state?.setBrush(BrushType.eraser),
+                  onTap: () => onBrushChanged(BrushType.eraser),
                 ),
               ],
             ),
-            const SizedBox(height: 12),
+            const SizedBox(height: 8),
+            // Opacity slider
+            Row(
+              children: [
+                const Icon(Icons.circle,
+                    size: 8, color: WhisperColors.inkFaint),
+                Expanded(
+                  child: SliderTheme(
+                    data: SliderTheme.of(context).copyWith(
+                      trackHeight: 1.5,
+                      thumbShape: const RoundSliderThumbShape(
+                          enabledThumbRadius: 6),
+                      overlayShape: const RoundSliderOverlayShape(
+                          overlayRadius: 12),
+                      activeTrackColor: WhisperColors.accent,
+                      inactiveTrackColor: WhisperColors.divider,
+                      thumbColor: WhisperColors.accent,
+                      overlayColor: WhisperColors.accentSoft,
+                    ),
+                    child: Slider(
+                      value: state?.currentOpacity ?? 1.0,
+                      min: 0.1,
+                      max: 1.0,
+                      onChanged: onOpacityChanged,
+                    ),
+                  ),
+                ),
+                const Icon(Icons.circle,
+                    size: 14, color: WhisperColors.inkFaint),
+              ],
+            ),
+            const SizedBox(height: 4),
+            // Alt kontroller
             Row(
               children: [
                 GestureDetector(
@@ -110,7 +149,7 @@ class CanvasDrawingToolbar extends StatelessWidget {
   Widget _colorDot(Color color, DrawingCanvasState? state) {
     final isSelected = state?.currentColor == color;
     return GestureDetector(
-      onTap: () => state?.setColor(color),
+      onTap: () => onColorChanged(color),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 4),
         width: 22,

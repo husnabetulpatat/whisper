@@ -39,6 +39,7 @@ class DrawingCanvasState extends State<DrawingCanvas> {
   BrushType _brush = BrushType.pen;
   Color _color = WhisperColors.ink;
   double _width = 2.0;
+  double _opacity = 1.0;
 
   @override
   void initState() {
@@ -75,6 +76,8 @@ class DrawingCanvasState extends State<DrawingCanvas> {
   void setBrush(BrushType brush) => setState(() => _brush = brush);
   void setColor(Color color) => setState(() => _color = color);
   void setWidth(double width) => setState(() => _width = width);
+  void setOpacity(double opacity) => setState(() => _opacity = opacity);
+  double get currentOpacity => _opacity;
 
   BrushType get currentBrush => _brush;
   Color get currentColor => _color;
@@ -82,9 +85,9 @@ class DrawingCanvasState extends State<DrawingCanvas> {
 
   Color _effectiveColor() {
     if (_brush == BrushType.eraser) return Colors.transparent;
-    if (_brush == BrushType.highlighter) return _color.withOpacity(0.35);
-    if (_brush == BrushType.pencil) return _color.withOpacity(0.6);
-    return _color;
+    if (_brush == BrushType.highlighter) return _color.withOpacity(0.35 * _opacity);
+    if (_brush == BrushType.pencil) return _color.withOpacity(0.6 * _opacity);
+    return _color.withOpacity(_opacity);
   }
 
   double _effectiveWidth() {
