@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import '../models/notebook.dart';
 import '../models/whisper_page.dart';
+import '../models/page_element.dart';
 import '../theme/whisper_colors.dart';
+import '../widgets/whisper_preview.dart';
 import 'canvas/canvas_screen.dart';
 
 class NotebookScreen extends StatefulWidget {
@@ -380,35 +382,61 @@ class _WhisperCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final hasElements = page.elements
+        .where((e) => e.type != PageElementType.drawing)
+        .isNotEmpty;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
-      padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
         color: WhisperColors.cardBackground,
         borderRadius: BorderRadius.circular(16),
       ),
-      child: Row(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  page.title.isEmpty ? 'untitled whisper' : page.title,
-                  style: Theme.of(context).textTheme.headlineMedium,
+          if (hasElements)
+            ClipRRect(
+              borderRadius: const BorderRadius.vertical(
+                  top: Radius.circular(16)),
+              child: LayoutBuilder(
+                builder: (context, constraints) => WhisperPreview(
+                  page: page,
+                  width: constraints.maxWidth,
+                  height: 90,
                 ),
-                const SizedBox(height: 6),
-                Text(
-                  '${formatDate(page.createdAt)}  ·  ${formatTime(page.createdAt)}',
-                  style: Theme.of(context).textTheme.labelSmall,
+              ),
+            ),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(20, 14, 20, 16),
+            child: Row(
+              children: [
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        page.title.isEmpty
+                            ? 'untitled whisper'
+                            : page.title,
+                        style:
+                        Theme.of(context).textTheme.headlineMedium,
+                      ),
+                      const SizedBox(height: 4),
+                      Text(
+                        '${formatDate(page.createdAt)}  ·  ${formatTime(page.createdAt)}',
+                        style: Theme.of(context).textTheme.labelSmall,
+                      ),
+                    ],
+                  ),
+                ),
+                const Icon(
+                  Icons.chevron_right,
+                  color: WhisperColors.inkFaint,
+                  size: 20,
                 ),
               ],
             ),
-          ),
-          const Icon(
-            Icons.chevron_right,
-            color: WhisperColors.inkFaint,
-            size: 20,
           ),
         ],
       ),
