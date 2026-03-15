@@ -504,25 +504,24 @@ class _CanvasScreenState extends State<CanvasScreen> {
               onExport: _exportAndShare,
             ),
             if (_drawingMode)
-              if (_drawingMode)
-                StatefulBuilder(
-                  builder: (context, setToolbarState) => CanvasDrawingToolbar(
-                    drawingKey: _drawingKey,
-                    onDone: _toggleDrawingMode,
-                    onOpacityChanged: (val) {
-                      _drawingKey.currentState?.setOpacity(val);
-                      setToolbarState(() {});
-                    },
-                    onBrushChanged: (brush) {
-                      _drawingKey.currentState?.setBrush(brush);
-                      setToolbarState(() {});
-                    },
-                    onColorChanged: (color) {
-                      _drawingKey.currentState?.setColor(color);
-                      setToolbarState(() {});
-                    },
-                  ),
+              StatefulBuilder(
+                builder: (context, setToolbarState) => CanvasDrawingToolbar(
+                  drawingKey: _drawingKey,
+                  onDone: _toggleDrawingMode,
+                  onOpacityChanged: (val) {
+                    _drawingKey.currentState?.setOpacity(val);
+                    setToolbarState(() {});
+                  },
+                  onBrushChanged: (brush) {
+                    _drawingKey.currentState?.setBrush(brush);
+                    setToolbarState(() {});
+                  },
+                  onColorChanged: (color) {
+                    _drawingKey.currentState?.setColor(color);
+                    setToolbarState(() {});
+                  },
                 ),
+              ),
             if (!_drawingMode)
               CanvasBottomToolbar(
                 onText: _addTextElement,
@@ -566,6 +565,57 @@ class _CanvasScreenState extends State<CanvasScreen> {
                   });
                 },
               ),
+            if (_selectedElement?.type == PageElementType.photo &&
+                !_drawingMode)
+              _buildPhotoToolbar(),
+          ],
+        ),
+      ),
+    );
+  }
+
+  // ─── Photo Toolbar ──────────────────────────────────────────
+
+  Widget _buildPhotoToolbar() {
+    final element = _selectedElement!;
+    return Positioned(
+      top: 52,
+      left: 0,
+      right: 0,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+        color: Color(widget.page.backgroundColor),
+        child: Row(
+          children: [
+            const Icon(Icons.opacity, size: 16, color: WhisperColors.inkFaint),
+            Expanded(
+              child: SliderTheme(
+                data: SliderTheme.of(context).copyWith(
+                  trackHeight: 1.5,
+                  thumbShape:
+                  const RoundSliderThumbShape(enabledThumbRadius: 6),
+                  overlayShape:
+                  const RoundSliderOverlayShape(overlayRadius: 12),
+                  activeTrackColor: WhisperColors.accent,
+                  inactiveTrackColor: WhisperColors.divider,
+                  thumbColor: WhisperColors.accent,
+                  overlayColor: WhisperColors.accentSoft,
+                ),
+                child: Slider(
+                  value: element.opacity,
+                  min: 0.1,
+                  max: 1.0,
+                  onChanged: (val) {
+                    setState(() => element.opacity = val);
+                  },
+                ),
+              ),
+            ),
+            GestureDetector(
+              onTap: () => _deleteElement(element),
+              child: const Icon(Icons.delete_outline,
+                  size: 18, color: Color(0xFFE07070)),
+            ),
           ],
         ),
       ),
@@ -638,13 +688,13 @@ class _CanvasScreenState extends State<CanvasScreen> {
         onLongPress: () => _confirmDelete(element),
         onScaleStart: (details) {
           if (isEditing) return;
-          if (_selectedElement != null && !isSelected) return; // YENİ
+          if (_selectedElement != null && !isSelected) return;
           _baseScale = element.scale;
           _baseRotation = element.rotation;
         },
         onScaleUpdate: (details) {
           if (isEditing) return;
-          if (_selectedElement != null && !isSelected) return; // YENİ
+          if (_selectedElement != null && !isSelected) return;
           setState(() {
             if (details.pointerCount == 1) {
               element.position = Offset(
@@ -652,34 +702,38 @@ class _CanvasScreenState extends State<CanvasScreen> {
                 element.position.dy + details.focalPointDelta.dy,
               );
             } else {
-              element.scale = (_baseScale * details.scale).clamp(0.3, 5.0);
+              element.scale =
+                  (_baseScale * details.scale).clamp(0.3, 5.0);
               element.rotation = _baseRotation + (details.rotation * 0.8);
             }
           });
         },
-        child: Padding(
-          padding: const EdgeInsets.all(hitPadding),
-          child: Transform.rotate(
-            angle: element.rotation,
-            child: Transform.scale(
-              scale: element.scale,
-              child: Container(
-                width: element.type == PageElementType.photo
-                    ? null
-                    : element.size.width,
-                decoration: BoxDecoration(
-                  border: isSelected
-                      ? Border.all(
-                      color: isEditing
-                          ? WhisperColors.accent
-                          : WhisperColors.accentSoft,
-                      width: element.type == PageElementType.photo
-                          ? 1.5
-                          : 1.0)
-                      : null,
-                  borderRadius: BorderRadius.circular(8),
+        child: Opacity(
+          opacity: element.opacity,
+          child: Padding(
+            padding: const EdgeInsets.all(hitPadding),
+            child: Transform.rotate(
+              angle: element.rotation,
+              child: Transform.scale(
+                scale: element.scale,
+                child: Container(
+                  width: element.type == PageElementType.photo
+                      ? null
+                      : element.size.width,
+                  decoration: BoxDecoration(
+                    border: isSelected
+                        ? Border.all(
+                        color: isEditing
+                            ? WhisperColors.accent
+                            : WhisperColors.accentSoft,
+                        width: element.type == PageElementType.photo
+                            ? 1.5
+                            : 1.0)
+                        : null,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: _buildElementContent(element, isSelected),
                 ),
-                child: _buildElementContent(element, isSelected),
               ),
             ),
           ),

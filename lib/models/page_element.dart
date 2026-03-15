@@ -18,6 +18,7 @@ class PageElement {
   double zIndex;
   double scale;
   double rotation;
+  double opacity;
   Map<String, dynamic> data;
 
   PageElement({
@@ -28,6 +29,7 @@ class PageElement {
     this.zIndex = 0,
     this.scale = 1.0,
     this.rotation = 0.0,
+    this.opacity = 1.0,
     required this.data,
   });
 
@@ -39,6 +41,7 @@ class PageElement {
     'zIndex': zIndex,
     'scale': scale,
     'rotation': rotation,
+    'opacity': opacity,
     'data': data,
   };
 
@@ -50,6 +53,7 @@ class PageElement {
     zIndex: json['zIndex'],
     scale: json['scale'] ?? 1.0,
     rotation: json['rotation'] ?? 0.0,
+    opacity: json['opacity'] ?? 1.0,
     data: Map<String, dynamic>.from(json['data']),
   );
 }
