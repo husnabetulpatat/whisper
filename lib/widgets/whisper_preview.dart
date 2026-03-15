@@ -24,7 +24,10 @@ class WhisperPreview extends StatelessWidget {
         width: width,
         height: height,
         child: CustomPaint(
-          painter: _PreviewPainter(page: page, size: Size(width, height)),
+          painter: _PreviewPainter(
+            page: page,
+            previewSize: Size(width, height),
+          ),
           child: _buildPhotoLayer(),
         ),
       ),
@@ -38,27 +41,29 @@ class WhisperPreview extends StatelessWidget {
 
     if (photos.isEmpty) return const SizedBox();
 
+    const scale = 0.25;
     return Stack(
       children: photos.map((e) {
         final path = e.data['path'] as String?;
         if (path == null) return const SizedBox();
-
-        const scale = 0.25;
         return Positioned(
           left: e.position.dx * scale,
           top: e.position.dy * scale,
-          child: Transform.rotate(
-            angle: e.rotation,
-            child: Transform.scale(
-              scale: e.scale * scale,
-              alignment: Alignment.topLeft,
-              child: ClipRRect(
-                borderRadius: BorderRadius.circular(4),
-                child: Image.file(
-                  File(path),
-                  width: e.size.width,
-                  height: e.size.height,
-                  fit: BoxFit.cover,
+          child: Opacity(
+            opacity: e.opacity,
+            child: Transform.rotate(
+              angle: e.rotation,
+              child: Transform.scale(
+                scale: e.scale * scale,
+                alignment: Alignment.topLeft,
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(4),
+                  child: Image.file(
+                    File(path),
+                    width: e.size.width,
+                    height: e.size.height,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),
@@ -71,9 +76,14 @@ class WhisperPreview extends StatelessWidget {
 
 class _PreviewPainter extends CustomPainter {
   final WhisperPage page;
-  final Size size;
+  final Size previewSize;
 
-  const _PreviewPainter({required this.page, required this.size});
+  const _PreviewPainter({
+    required this.page,
+    required this.previewSize,
+  });
+
+  static const double scale = 0.25;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -81,20 +91,34 @@ class _PreviewPainter extends CustomPainter {
     final bgPaint = Paint()..color = Color(page.backgroundColor);
     canvas.drawRect(Rect.fromLTWH(0, 0, size.width, size.height), bgPaint);
 
-    const scale = 0.25;
+    canvas.saveLayer(
+      Rect.fromLTWH(0, 0, size.width, size.height),
+      Paint(),
+    );
 
     for (final element in page.elements) {
-      if (element.type == PageElementType.text) {
-        _drawText(canvas, element, scale);
-      } else if (element.type == PageElementType.musicCard) {
-        _drawMusicCard(canvas, element, scale);
-      } else if (element.type == PageElementType.voiceRecording) {
-        _drawVoiceCard(canvas, element, scale);
+      switch (element.type) {
+        case PageElementType.text:
+          _drawText(canvas, element);
+          break;
+        case PageElementType.drawing:
+          _drawStrokes(canvas, element);
+          break;
+        case PageElementType.musicCard:
+          _drawMusicCard(canvas, element);
+          break;
+        case PageElementType.voiceRecording:
+          _drawVoiceCard(canvas, element);
+          break;
+        default:
+          break;
       }
     }
+
+    canvas.restore();
   }
 
-  void _drawText(Canvas canvas, PageElement element, double scale) {
+  void _drawText(Canvas canvas, PageElement element) {
     final text = element.data['text'] as String? ?? '';
     if (text.isEmpty || text == 'write something...') return;
 
@@ -104,15 +128,12 @@ class _PreviewPainter extends CustomPainter {
     ((element.data['fontSize'] as double? ?? 16.0) * scale)
         .clamp(4.0, 12.0);
 
-    final x = element.position.dx * scale;
-    final y = element.position.dy * scale;
-
     final textPainter = TextPainter(
       text: TextSpan(
         text: text,
         style: TextStyle(
           fontSize: fontSize,
-          color: color,
+          color: color.withOpacity(element.opacity),
           height: 1.4,
         ),
       ),
@@ -123,57 +144,66 @@ class _PreviewPainter extends CustomPainter {
     textPainter.layout(maxWidth: element.size.width * scale);
 
     canvas.save();
-    canvas.translate(x, y);
+    canvas.translate(element.position.dx * scale, element.position.dy * scale);
     canvas.rotate(element.rotation);
     canvas.scale(element.scale);
     textPainter.paint(canvas, Offset.zero);
     canvas.restore();
   }
 
-  void _drawMusicCard(Canvas canvas, PageElement element, double scale) {
+  void _drawStrokes(Canvas canvas, PageElement element) {
+    final strokesData = element.data['strokes'] as List?;
+    if (strokesData == null) return;
+
+    for (final s in strokesData) {
+      final points = (s['points'] as List)
+          .map((p) => Offset(
+        p['dx'].toDouble() * scale,
+        p['dy'].toDouble() * scale,
+      ))
+          .toList();
+
+      if (points.isEmpty) continue;
+
+      final isEraser = s['brush'] == 'eraser';
+      final paint = Paint()
+        ..strokeWidth = (s['width'] as num).toDouble() * scale
+        ..strokeCap = StrokeCap.round
+        ..strokeJoin = StrokeJoin.round
+        ..style = PaintingStyle.stroke;
+
+      if (isEraser) {
+        paint.blendMode = BlendMode.clear;
+        paint.color = Colors.transparent;
+      } else {
+        paint.color = Color(s['color'] as int);
+      }
+
+      final path = Path();
+      path.moveTo(points.first.dx, points.first.dy);
+      for (int i = 1; i < points.length - 1; i++) {
+        final mid = Offset(
+          (points[i].dx + points[i + 1].dx) / 2,
+          (points[i].dy + points[i + 1].dy) / 2,
+        );
+        path.quadraticBezierTo(
+            points[i].dx, points[i].dy, mid.dx, mid.dy);
+      }
+      if (points.length > 1) {
+        path.lineTo(points.last.dx, points.last.dy);
+      }
+      canvas.drawPath(path, paint);
+    }
+  }
+
+  void _drawMusicCard(Canvas canvas, PageElement element) {
     final x = element.position.dx * scale;
     final y = element.position.dy * scale;
     final w = element.size.width * scale;
-    final h = 20.0 * scale;
+    const h = 20.0 * scale;
 
     final paint = Paint()
       ..color = WhisperColors.surface
-      ..style = PaintingStyle.fill;
-
-    final rect = RRect.fromRectAndRadius(
-      Rect.fromLTWH(x, y, w, h),
-      const Radius.circular(4),
-    );
-    canvas.drawRRect(rect, paint);
-
-    // Platform renk çizgisi
-    final platformName = element.data['platform'] as String? ?? 'unknown';
-    Color platformColor = WhisperColors.inkFaint;
-    if (platformName == 'spotify') platformColor = const Color(0xFF1DB954);
-    if (platformName == 'appleMusic') platformColor = const Color(0xFFFC3C44);
-    if (platformName == 'youtubeMusic') platformColor = const Color(0xFFFF0000);
-
-    final linePaint = Paint()
-      ..color = platformColor
-      ..style = PaintingStyle.fill;
-
-    canvas.drawRRect(
-      RRect.fromRectAndRadius(
-        Rect.fromLTWH(x, y, 3 * scale, h),
-        const Radius.circular(2),
-      ),
-      linePaint,
-    );
-  }
-
-  void _drawVoiceCard(Canvas canvas, PageElement element, double scale) {
-    final x = element.position.dx * scale;
-    final y = element.position.dy * scale;
-    final w = element.size.width * scale;
-    final h = 18.0 * scale;
-
-    final paint = Paint()
-      ..color = WhisperColors.accentSoft.withOpacity(0.3)
       ..style = PaintingStyle.fill;
 
     canvas.drawRRect(
@@ -183,9 +213,39 @@ class _PreviewPainter extends CustomPainter {
       ),
       paint,
     );
+
+    final platformName = element.data['platform'] as String? ?? 'unknown';
+    Color platformColor = WhisperColors.inkFaint;
+    if (platformName == 'spotify') platformColor = const Color(0xFF1DB954);
+    if (platformName == 'appleMusic') platformColor = const Color(0xFFFC3C44);
+    if (platformName == 'youtubeMusic') platformColor = const Color(0xFFFF0000);
+
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(x, y, 3 * scale, h),
+        const Radius.circular(2),
+      ),
+      Paint()..color = platformColor,
+    );
+  }
+
+  void _drawVoiceCard(Canvas canvas, PageElement element) {
+    final x = element.position.dx * scale;
+    final y = element.position.dy * scale;
+    final w = element.size.width * scale;
+    const h = 18.0 * scale;
+
+    canvas.drawRRect(
+      RRect.fromRectAndRadius(
+        Rect.fromLTWH(x, y, w, h),
+        const Radius.circular(4),
+      ),
+      Paint()
+        ..color = WhisperColors.accentSoft.withOpacity(0.3)
+        ..style = PaintingStyle.fill,
+    );
   }
 
   @override
-  bool shouldRepaint(_PreviewPainter old) =>
-      old.page != page;
+  bool shouldRepaint(_PreviewPainter old) => old.page != page;
 }

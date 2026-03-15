@@ -381,9 +381,7 @@ class _WhisperCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final hasElements = page.elements
-        .where((e) => e.type != PageElementType.drawing)
-        .isNotEmpty;
+    final bool hasElements = true;
 
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
