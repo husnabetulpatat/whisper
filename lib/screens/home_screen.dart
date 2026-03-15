@@ -3,6 +3,7 @@ import '../models/notebook.dart';
 import '../theme/whisper_colors.dart';
 import '../services/storage_service.dart';
 import 'notebook_screen.dart';
+import '../utils/whisper_router.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -329,12 +330,7 @@ class _HomeScreenState extends State<HomeScreen> {
           onTap: () async {
             await Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (_) => NotebookScreen(
-                  notebook: notebook,
-                  onChanged: _save,
-                ),
-              ),
+              WhisperRouter.toNotebook(notebook, _save),
             );
             setState(() {});
           },

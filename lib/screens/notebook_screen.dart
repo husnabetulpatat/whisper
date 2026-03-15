@@ -5,6 +5,7 @@ import '../models/page_element.dart';
 import '../theme/whisper_colors.dart';
 import '../widgets/whisper_preview.dart';
 import 'canvas/canvas_screen.dart';
+import '../utils/whisper_router.dart';
 
 class NotebookScreen extends StatefulWidget {
   final Notebook notebook;
@@ -341,9 +342,7 @@ class _NotebookScreenState extends State<NotebookScreen> {
           onTap: () async {
             await Navigator.push(
               context,
-              MaterialPageRoute(
-                builder: (_) => CanvasScreen(page: page),
-              ),
+              WhisperRouter.toCanvas(page),
             );
             setState(() {});
             widget.onChanged();
