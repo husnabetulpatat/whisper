@@ -4,6 +4,7 @@ import '../theme/whisper_colors.dart';
 import '../services/storage_service.dart';
 import 'notebook_screen.dart';
 import '../utils/whisper_router.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,6 +27,7 @@ class _HomeScreenState extends State<HomeScreen> {
     setState(() {
       _notebooks.addAll(notebooks);
     });
+    FlutterNativeSplash.remove();
   }
 
   Future<void> _save() async {
